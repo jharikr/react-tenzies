@@ -1,10 +1,18 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Die from './components/Die'
 import { nanoid } from "nanoid"
+import Confetti from 'react-confetti'
 import './App.css'
 
 function App() {
   const [dice, setDice] = useState(generateDice(10))
+  const [tenzies, setTenzies] = useState(false)
+
+  useEffect(() => {
+    const allDiceHeld = dice.every(die => die.isHeld)
+    const allSameValue = dice.every(die => die.value === dice[0].value)
+    setTenzies(allDiceHeld && allSameValue)
+  }, [dice])
 
   function randomNum() {
     return Math.ceil(Math.random() * 6)
@@ -45,10 +53,11 @@ function App() {
 
   return (
     <main>
+      {tenzies && <Confetti width={window.innerWidth} height={window.innerHeight} />}
       <div className='dice'>
         {diceElements}
       </div>
-      <button className='roll-dice' onClick={rollDice}>Roll</button>
+      <button className='roll-dice' onClick={rollDice}>{tenzies ? "New Game" : "Roll"}</button>
     </main>
   )
 }
